@@ -11,5 +11,5 @@ enum class PhoneNumberType {
 data class PhoneNumberRequest(
     val personId: PersonId,
     val type: PhoneNumberType,
-    val phone: String,
+    val phoneNumber: String,
 )

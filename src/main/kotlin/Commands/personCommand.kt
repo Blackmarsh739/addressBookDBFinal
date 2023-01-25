@@ -38,7 +38,6 @@ class AddPersonCommand(
     override fun execute(): Person {
         val person = request.toPerson()
 
-
         val personDetail = storage.addPerson(person)
 
         return Person(
