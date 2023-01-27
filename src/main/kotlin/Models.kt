@@ -37,5 +37,5 @@ data class Email(
     val emailId: EmailId,
     val personId: PersonId,
     val emailType: EmailType,
-    val emailDetail: Email
+    val emailDetail: String
 )

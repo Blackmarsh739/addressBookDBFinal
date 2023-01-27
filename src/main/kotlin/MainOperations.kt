@@ -2,6 +2,7 @@ package com.addressbook
 
 import AddAddressCommand
 import AddPersonCommand
+import Commands.AddEmailCommand
 import Commands.AddPhoneNumberCommand
 import PersonDB
 import UpdatePersonCommand
@@ -14,6 +15,7 @@ import com.example.addressbook.requests.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import storage.EmailDB
 import storage.PhoneDB
 
 fun main(args: Array<String>) {
@@ -35,8 +37,10 @@ fun main(args: Array<String>) {
     val hamza = AddPersonCommand(PersonDB, person2).execute()
     val person3 = AddPersonRequest("Bhagvat","Jadeja")
     val bhagvat = AddPersonCommand(PersonDB, person3).execute()
+
     AddAddressCommand(AddressDB, AddAddressRequest(bhagvat.personId,AddressType.Office,"Baroda")).execute()
     AddPhoneNumberCommand(PhoneDB, PhoneNumberRequest(parth.personId, PhoneNumberType.Home,"7031013939")).execute()
+    AddEmailCommand(EmailDB, EmailRequest(parth.personId, EmailType.Home, "parth.raval@vyana.com")).execute()
     UpdatePersonCommand(PersonDB,UpdatePersonRequest(parth.personId,"Black","Marsh")).execute()
 
 }

@@ -1,18 +1,27 @@
 package storage
 
 import com.example.addressbook.Email
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.transactions.transactionScope
+import com.addressbook.tables.Emails
 
 object EmailDB {
 
-    fun addEmail(email: Email): Email{
-
+    fun addEmail(email: Email): Email {
         transaction {
-            Email.insert{
-                it[this.]
+            Emails.insert {
+                it[this.emailId] = email.emailId
+                it[this.personId] = email.personId
+                it[this.emailType] = email.emailType
+                it[this.email] = email.emailDetail
             }
         }
-        return
+        return email
     }
+
+
+
+
+
+
 }
