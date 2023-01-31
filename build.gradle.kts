@@ -25,6 +25,8 @@ tasks.withType<KotlinCompile> {
 
 val exposedVersion: String by project
 dependencies {
+    implementation("io.arrow-kt:arrow-core:1.1.2")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")

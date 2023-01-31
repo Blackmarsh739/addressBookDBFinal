@@ -1,39 +1,42 @@
 package Commands
 
 import com.addressbook.commands.Command
-import com.addressbook.tables.PhoneNumbers
-import com.example.addressbook.PersonId
 import com.example.addressbook.PhoneNumber
 import com.example.addressbook.requests.PhoneNumberRequest
-import storage.PhoneDB
-import java.util.*
+import com.example.addressbook.requests.UpdatePhoneNumberRequest
+import storage.PhoneNumberDB
 
-fun PhoneNumberRequest.toPhoneNumber() =
+fun UpdatePhoneNumberRequest.toPhoneNumber() =
     PhoneNumber(
-        phoneNumberId = UUID.randomUUID(),
-        personId= this@toPhoneNumber.personId,
-        phoneNumberType = this@toPhoneNumber.type,
-        phoneNumber = this@toPhoneNumber.phoneNumber
+        phoneNumberId = this@toPhoneNumber.phoneNumberId,
+        phoneNumber = this@toPhoneNumber.phoneNumber,
+        personId = this@toPhoneNumber.personId,
+        phoneNumberType = this@toPhoneNumber.phoneNumberType
     )
-
 class AddPhoneNumberCommand(
-    private val storage: PhoneDB,
+    private val storage: PhoneNumberDB,
     private val request: PhoneNumberRequest
 ): Command {
-    override fun execute(): Any {
+    override fun execute(): PhoneNumber {
+
+        return PhoneNumberDB.addPhoneNumber(request)
+    }
+
+}
+
+class UpdatePhoneNumberCommand(private val storage: PhoneNumberDB, private val request: UpdatePhoneNumberRequest): Command{
+    override fun execute(): PhoneNumber {
         val phoneNumber = request.toPhoneNumber()
+        return storage.updatePhoneNumber(phoneNumber)
+    }
 
-        val phoneNumberDetail = PhoneDB.addPhoneNumber(phoneNumber)
+}
 
-        return PhoneNumber(
-            phoneNumberId = phoneNumberDetail.phoneNumberId,
-            personId= phoneNumberDetail.personId,
-            phoneNumberType = phoneNumberDetail.phoneNumberType,
-            phoneNumber= phoneNumberDetail.phoneNumber,
-
-
-
-        )
+class ListAllPhoneNumberCommand(
+    private val storage: PhoneNumberDB,
+): Command{
+    override fun execute(): List<PhoneNumber> {
+        return storage.listAllPhoneNumber()
     }
 
 }

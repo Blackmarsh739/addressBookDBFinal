@@ -13,12 +13,6 @@ data class UpdatePersonRequest(
     val lastName: String,
 )
 
-data class RemovePersonRequest(
-    val personId: UUID,
-    val firstName: String,
-    val lastName: String
-)
-
 data class FetchPersonRequest(
     val personId: UUID
 )

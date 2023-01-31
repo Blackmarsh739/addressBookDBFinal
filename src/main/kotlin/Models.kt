@@ -39,3 +39,10 @@ data class Email(
     val emailType: EmailType,
     val emailDetail: String
 )
+
+typealias GroupId = UUID
+
+data class Group(
+    val groupId: GroupId,
+    val groupName: String
+)
