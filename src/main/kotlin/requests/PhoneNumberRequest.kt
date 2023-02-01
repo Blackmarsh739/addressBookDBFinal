@@ -1,8 +1,6 @@
 package com.example.addressbook.requests
 
 import com.example.addressbook.PersonId
-import com.example.addressbook.PhoneNumber
-import com.example.addressbook.PhoneNumberId
 import java.util.*
 
 enum class PhoneNumberType {

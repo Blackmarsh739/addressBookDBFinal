@@ -1,9 +1,11 @@
 package storage
 
+import arrow.core.Either
 import com.addressbook.tables.GroupContactAssociationTable
 import com.addressbook.tables.GroupsTable
 import com.example.addressbook.Group
 import com.example.addressbook.GroupId
+import com.example.addressbook.Person
 import com.example.addressbook.requests.AddGroupRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -15,28 +17,36 @@ fun ResultRow.toGroup() = Group(
     groupId = this@toGroup[GroupsTable.groupId]
 )
 object GroupDB {
-    fun addGroup(group: AddGroupRequest): Group{
-       val res = transaction {
-            GroupsTable.insert {
-                it[this.groupName]= group.groupName
-            }
-        }.resultedValues!!.first().toGroup()
-        return res
-    }
-
-    fun updateGroup(group: Group): Group {
-        transaction {
-            GroupsTable.update ({GroupsTable.groupId eq group.groupId }) {
-                it[this.groupName] = group.groupName
-            }
+    fun addGroup(group: AddGroupRequest): Either<Exception, Group> {
+        return try {
+            val res = transaction {
+                GroupsTable.insert {
+                    it[this.groupName] = group.groupName
+                }
+            }.resultedValues!!.first().toGroup()
+            Either.Right(res)
+        } catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
         }
-        return group
     }
 
-    fun addContactsInGroups(gId: UUID, contactList: List<UUID>){
+    fun updateGroup(group: Group): Either<Exception, Group> {
+        return try {
+            transaction {
+                GroupsTable.update({ GroupsTable.groupId eq group.groupId }) {
+                    it[this.groupName] = group.groupName
+                }
+            }
+            Either.Right(group)
+        } catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
+        }
+    }
 
-          val res =   transaction {
-                contactList.forEach {cid->
+    fun addContactsInGroups(gId: UUID, contactList: List<UUID>) {
+
+        val res = transaction {
+            contactList.forEach { cid ->
                 GroupContactAssociationTable.insert {
                     it[this.groupId] = gId
                     it[this.personId] = cid
@@ -45,21 +55,30 @@ object GroupDB {
         }
     }
 
-    fun removeGroup(groupId: GroupId): String {
-        transaction {
-            GroupContactAssociationTable.deleteWhere { GroupContactAssociationTable.groupId eq groupId }
-            GroupsTable.deleteWhere { GroupsTable.groupId eq groupId }
+    fun removeGroup(groupId: GroupId): Either<Exception, String> {
+        return try {
+            transaction {
+                GroupContactAssociationTable.deleteWhere { GroupContactAssociationTable.groupId eq groupId }
+                GroupsTable.deleteWhere { GroupsTable.groupId eq groupId }
+            }
+            Either.Right("Group was deleted")
+        } catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
         }
-        return "${groupId} is deleted"
+
     }
 
-    fun listAllGroups(): List<Group>{
-        val list = transaction {
-            GroupsTable.selectAll().map {
-                    row -> Group(row[GroupsTable.groupId],row[GroupsTable.groupName])
+    fun listAllGroups(): Either<Exception, List<Group>> {
+       return try {
+            val list = transaction {
 
+                GroupsTable.selectAll().map { row ->
+                    Group(row[GroupsTable.groupId], row[GroupsTable.groupName])
+                }
             }
+            Either.Right(list)
+        } catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
         }
-        return list
     }
 }

@@ -1,7 +1,9 @@
 package com.addressbook.storages
 
+import arrow.core.Either
 import com.addressbook.tables.AddressesTable
 import com.example.addressbook.Address
+import com.example.addressbook.Person
 import com.example.addressbook.requests.AddAddressRequest
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -16,15 +18,20 @@ fun ResultRow.toAddress() = Address(
 )
 object AddressDB {
 
-    fun addAddress(address: AddAddressRequest): Address {
-        val res = transaction {
+    fun addAddress(address: AddAddressRequest): Either<Exception, Address> {
+       return try{
+            val res = transaction {
             AddressesTable.insert{
                 it[this.personId] = address.personId
                 it[this.addressType] = address.type
                 it[this.addressDetail] = address.addressDetail
             }
         }.resultedValues!!.first().toAddress()
-
-        return res
+            Either.Right(res)
     }
+        catch(e: Exception){
+            Either.Left(Exception("There was some error."))
+        }
+    }
+
 }

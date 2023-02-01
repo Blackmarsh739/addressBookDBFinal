@@ -5,7 +5,7 @@ import com.example.addressbook.requests.EmailType
 import com.example.addressbook.requests.PhoneNumberType
 import org.jetbrains.exposed.sql.Table
 
-object PersonsTable : Table() {
+object PersonsTable : Table("persons") {
 
     val personId = uuid("person_id").autoGenerate()
     val firstName = varchar("first_name", length = 100)
@@ -14,7 +14,7 @@ object PersonsTable : Table() {
     override val primaryKey = PrimaryKey(personId, name = "PK_Contact_ID")
 }
 
-object PhoneNumbersTable : Table() {
+object PhoneNumbersTable : Table("phonenumbers") {
     val phoneNumberId = uuid("phone_number_id").autoGenerate()
     val personId = (uuid("person_id") references PersonsTable.personId).index()
     val phoneNumberType =   enumerationByName<PhoneNumberType>("type",10)
@@ -23,7 +23,7 @@ object PhoneNumbersTable : Table() {
     override val primaryKey = PrimaryKey(PhoneNumbersTable.phoneNumberId, name = "PK_PhoneNumber_ID")
 }
 
-object EmailsTable : Table() {
+object EmailsTable : Table("emails") {
     val emailId = uuid("email_id").autoGenerate()
     val personId = (uuid("person_id") references PersonsTable.personId).index()
     val emailType =   enumerationByName<EmailType>("type",10)
@@ -32,7 +32,7 @@ object EmailsTable : Table() {
     override val primaryKey = PrimaryKey(EmailsTable.emailId, name = "PK_Email_ID")
 }
 
-object AddressesTable : Table() {
+object AddressesTable : Table("addresses") {
     val addressId = uuid("address_id").autoGenerate()
     val personId = (uuid("person_id") references PersonsTable.personId).index()
     val addressType =   enumerationByName<AddressType>("type",10)

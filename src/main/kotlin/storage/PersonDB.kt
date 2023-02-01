@@ -1,8 +1,8 @@
+import arrow.core.Either
 import com.addressbook.tables.*
 import com.example.addressbook.Person
 import com.example.addressbook.PersonId
 import com.example.addressbook.PhoneNumber
-import com.example.addressbook.PhoneNumberId
 import com.example.addressbook.requests.AddPersonRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -16,39 +16,55 @@ fun ResultRow.toPerson() = Person(
     lastName = this@toPerson[PersonsTable.lastName]
 )
 object PersonDB {
-    fun addPerson(person: AddPersonRequest): Person {
-        val res = transaction {
-            PersonsTable.insert{
-                it[this.firstName] = person.firstName
-                it[this.lastName] = person.lastName
-            }
-        }.resultedValues!!.first().toPerson()
-        return res
-    }
-
-    fun updatePerson(person: Person): Person {
-        transaction {
-            PersonsTable.update({ PersonsTable.personId eq person.personId }) {
-                it[this.firstName] = person.firstName
-                it[this.lastName] = person.lastName
-            }
+    fun addPerson(person: AddPersonRequest): Either<Exception, Person> {
+        return try{
+            val res = transaction {
+                PersonsTable.insert {
+                    it[this.firstName] = person.firstName
+                    it[this.lastName] = person.lastName
+                }
+            }.resultedValues!!.first().toPerson()
+            Either.Right(res)
+        } catch(e: Exception){
+            Either.Left(Exception("There was some error."))
         }
-        return fetchPerson(person.personId)
     }
 
-    fun removePerson(peronId: PersonId): String{
-        transaction {
-            GroupContactAssociationTable.deleteWhere { personId eq peronId }
-            PhoneNumbersTable.deleteWhere { personId eq peronId }
-            EmailsTable.deleteWhere { personId eq peronId }
-            AddressesTable.deleteWhere { personId eq peronId }
-            GroupContactAssociationTable.deleteWhere { personId eq peronId }
-            PersonsTable.deleteWhere { personId eq peronId }
-
+    fun updatePerson(person: Person): Either<Exception, Person> {
+        return try {
+           val res = transaction {
+                PersonsTable.update({ PersonsTable.personId eq person.personId }) {
+                    it[this.firstName] = person.firstName
+                    it[this.lastName] = person.lastName
+                }
+               fetchPerson(person.personId)
+            }
+            Either.Right(res)
         }
-        return "${peronId} is deleted"
+        catch (e: Exception){
+            Either.Left(Exception("There was some error."))
+        }
     }
-    fun fetchPerson(pid: UUID): Person {
+
+    fun removePerson(peronId: PersonId): Either<Exception, String>{
+       return try{
+          transaction {
+               GroupContactAssociationTable.deleteWhere { personId eq peronId }
+               PhoneNumbersTable.deleteWhere { personId eq peronId }
+               EmailsTable.deleteWhere { personId eq peronId }
+               AddressesTable.deleteWhere { personId eq peronId }
+               GroupContactAssociationTable.deleteWhere { personId eq peronId }
+               PersonsTable.deleteWhere { personId eq peronId }
+
+           }
+           Either.Right("Person was removed")
+       }
+       catch (e: Exception){
+           Either.Left(Exception("There was some error."))
+       }
+
+    }
+    private fun fetchPerson(pid: UUID): Person {
         val res = transaction {
             PersonsTable.select(PersonsTable.personId eq pid).map {
                 Person(
@@ -61,24 +77,35 @@ object PersonDB {
         return res
     }
 
-    fun searchPhoneNumberByPersonName(firstname: String): List<PhoneNumber>{
-       val result =  transaction {
+    fun searchPhoneNumberByPersonName(firstname: String): Either<Exception ,List<PhoneNumber>>{
+     return try{
+          val result =  transaction {
             (PersonsTable innerJoin PhoneNumbersTable)
                 .select(PersonsTable.firstName eq firstname)
                 .map {
                     PhoneNumber(it[PhoneNumbersTable.phoneNumberId], it[PhoneNumbersTable.personId],
                     it[PhoneNumbersTable.phoneNumberType], it[PhoneNumbersTable.phone]) }
+          }
+          Either.Right(result)
         }
-        return result
+      catch (e: Exception){
+          Either.Left(Exception("There was some error."))
+      }
+
     }
 
-    fun listAllPerson(): List<Person>{
-        val list = transaction {
-            PersonsTable.selectAll().map {
-                row -> Person(row[PersonsTable.personId],row[PersonsTable.firstName],row[PersonsTable.lastName])
+    fun listAllPerson(): Either<Exception ,List<Person>>{
+       return try {
+            val list = transaction {
+                PersonsTable.selectAll().map {
+                    row -> Person(row[PersonsTable.personId],row[PersonsTable.firstName],row[PersonsTable.lastName])
+                }
             }
+            Either.Right(list)
         }
-        return list
-    }
+        catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
+        }
 
+    }
 }

@@ -1,8 +1,7 @@
 package storage
 
-import com.addressbook.tables.PersonsTable
+import arrow.core.Either
 import com.addressbook.tables.PhoneNumbersTable
-import com.example.addressbook.Person
 import com.example.addressbook.PhoneNumber
 import com.example.addressbook.requests.PhoneNumberRequest
 import org.jetbrains.exposed.sql.ResultRow
@@ -18,33 +17,50 @@ fun ResultRow.toPhone() = PhoneNumber(
     phoneNumberType = this@toPhone[PhoneNumbersTable.phoneNumberType]
 )
 object PhoneNumberDB {
-    fun addPhoneNumber(phoneRequest: PhoneNumberRequest): PhoneNumber{
-        val res = transaction {
-            PhoneNumbersTable.insert{
-                it[this.personId] = phoneRequest.personId
-                it[this.phoneNumberType] = phoneRequest.type
-                it[this.phone] = phoneRequest.phoneNumber
-            }
-        }.resultedValues!!.first().toPhone()
-
-        return res
+    fun addPhoneNumber(phoneNumber: PhoneNumberRequest): Either<Exception, PhoneNumber> {
+        return try {
+            val res = transaction {
+                PhoneNumbersTable.insert {
+                    it[this.personId] = phoneNumber.personId
+                    it[this.phoneNumberType] = phoneNumber.type
+                    it[this.phone] = phoneNumber.phoneNumber
+                }
+            }.resultedValues!!.first().toPhone()
+            Either.Right(res)
+        } catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
+        }
     }
 
-    fun updatePhoneNumber(phoneNumber: PhoneNumber): PhoneNumber{
-        transaction {
-            PhoneNumbersTable.update({PhoneNumbersTable.phoneNumberId eq phoneNumber.phoneNumberId}) {
-                it[this.phone] = phoneNumber.phoneNumber
+    fun updatePhoneNumber(phoneNumber: PhoneNumber): Either<Exception, PhoneNumber> {
+       return try {
+            transaction {
+                PhoneNumbersTable.update({ PhoneNumbersTable.phoneNumberId eq phoneNumber.phoneNumberId }) {
+                    it[this.phone] = phoneNumber.phoneNumber
+                }
             }
+            Either.Right(phoneNumber)
+        } catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
         }
-        return phoneNumber
     }
 
-    fun listAllPhoneNumber(): List<PhoneNumber>{
-        val list = transaction {
-            PhoneNumbersTable.selectAll().map {
-                    row -> PhoneNumber(row[PhoneNumbersTable.personId],row[PhoneNumbersTable.phoneNumberId],row[PhoneNumbersTable.phoneNumberType], row[PhoneNumbersTable.phone])
+    fun listAllPhoneNumber(): Either<Exception ,List<PhoneNumber>>{
+       return try {
+            val list = transaction {
+                PhoneNumbersTable.selectAll().map { row ->
+                    PhoneNumber(
+                        row[PhoneNumbersTable.personId],
+                        row[PhoneNumbersTable.phoneNumberId],
+                        row[PhoneNumbersTable.phoneNumberType],
+                        row[PhoneNumbersTable.phone]
+                    )
+                }
             }
+            Either.Right(list)
         }
-        return list
+        catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
+        }
     }
 }

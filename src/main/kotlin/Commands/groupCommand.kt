@@ -1,5 +1,6 @@
 package Commands
 
+import arrow.core.Either
 import com.example.addressbook.requests.AddGroupRequest
 import com.addressbook.commands.Command
 import com.example.addressbook.Group
@@ -8,6 +9,10 @@ import com.example.addressbook.requests.RemoveGroupRequest
 import com.example.addressbook.requests.UpdateGroupRequest
 import storage.GroupDB
 import storage.GroupDB.addContactsInGroups
+import storage.GroupDB.addGroup
+import storage.GroupDB.listAllGroups
+import storage.GroupDB.removeGroup
+import storage.GroupDB.updateGroup
 import java.util.UUID
 
 
@@ -20,16 +25,17 @@ fun UpdateGroupRequest.toGroup() =
 class AddGroupCommand(
     private val request: AddGroupRequest
 ): Command {
-    override fun execute(): Group {
-        return GroupDB.addGroup(request)
+    override fun execute(): Either<Exception, Group> {
+        return addGroup(request)
 
     }
 }
 
-class UpdateGroupCommand(private val storage: GroupDB, private val request: UpdateGroupRequest): Command {
-    override fun execute(): Group {
+class UpdateGroupCommand(private val request: UpdateGroupRequest):
+    Command {
+    override fun execute(): Either<Exception, Group> {
         val group = request.toGroup()
-        return storage.updateGroup(group)
+        return updateGroup(group)
     }
 
 }
@@ -43,18 +49,17 @@ class AddContactInGroupCommand(
     }
 }
 
-class RemoveGroupCommand(private val storage: GroupDB, private val groupId: GroupId): Command{
+class RemoveGroupCommand(private val groupId: GroupId): Command{
     override fun execute(): Any {
-        return storage.removeGroup(groupId)
+        return removeGroup(groupId)
     }
 
 }
 
 class ListAllGroupCommand(
-    private val storage: GroupDB,
 ): Command{
-    override fun execute(): List<Group> {
-        return storage.listAllGroups()
+    override fun execute():Either<Exception, List<Group>> {
+        return listAllGroups()
     }
 
 }

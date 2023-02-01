@@ -1,3 +1,6 @@
+import PersonDB.addPerson
+import PersonDB.removePerson
+import arrow.core.Either
 import com.addressbook.commands.Command
 import com.example.addressbook.Person
 import com.example.addressbook.PersonId
@@ -13,31 +16,28 @@ fun UpdatePersonRequest.toPerson() =
     )
 
 class AddPersonCommand(
-    private val storage: PersonDB,
     private val request: AddPersonRequest
 ): Command {
-    override fun execute(): Person {
-        return storage.addPerson(request)
+    override fun execute(): Either<Exception, Person> {
+        return addPerson(request)
     }
 }
-class UpdatePersonCommand(private val storage: PersonDB, private val request: UpdatePersonRequest) : Command {
-    override fun execute(): Person {
+class UpdatePersonCommand(private val request: UpdatePersonRequest) : Command {
+    override fun execute(): Either<Exception, Person> {
         val person = request.toPerson()
-        return storage.updatePerson(person)
+        return PersonDB.updatePerson(person)
     }
 }
 
-class RemovePersonCommand(private val storage: PersonDB, private val personId: PersonId) :Command{
-    override fun execute(): Any {
-        return storage.removePerson(personId)
-    }
+class RemovePersonCommand(private val personId: PersonId) :Command{
+    override fun execute(): Either<Exception, String> = removePerson(personId)
 
 }
 
 class ListAllPersonCommand(
     private val storage: PersonDB,
 ): Command {
-    override fun execute(): List<Person> {
+    override fun execute(): Either<Exception, List<Person>> {
         return storage.listAllPerson()
     }
 
@@ -47,7 +47,7 @@ class SerchContactCommand(
     private val storage: PersonDB,
     private val firstName: String
 ): Command{
-    override fun execute(): Any {
+    override fun execute(): Either<Exception, List<PhoneNumber>> {
         return storage.searchPhoneNumberByPersonName(firstName)
     }
 
