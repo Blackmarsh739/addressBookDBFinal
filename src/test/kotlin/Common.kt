@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-fun connectToDatabase(): Database {
+internal fun connectToDatabase(): Database {
     return Database.connect(
         HikariDataSource().apply {
             jdbcUrl = "jdbc:mysql://localhost:3306/addressBookDatabase"
@@ -16,7 +16,7 @@ fun connectToDatabase(): Database {
     )
 }
 
-fun resetDatabase(){
+internal fun resetDatabase(){
     transaction {
         SchemaUtils.drop(
             PersonsTable, PhoneNumbersTable, EmailsTable, AddressesTable, GroupsTable,

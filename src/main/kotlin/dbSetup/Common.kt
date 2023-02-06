@@ -1,3 +1,5 @@
+package dbSetup
+
 import com.addressbook.tables.*
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
@@ -15,7 +17,7 @@ fun connectToDatabase(): Database {
             maximumPoolSize = 5
         }
     )
-
+}
     val schema = listOf<Table>(
         PersonsTable,
         PhoneNumbersTable,
@@ -35,4 +37,3 @@ fun connectToDatabase(): Database {
             }
         }
     }
-}

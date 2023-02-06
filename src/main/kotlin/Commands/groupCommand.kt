@@ -44,16 +44,11 @@ class AddContactInGroupCommand(
     private val gId: UUID,
     private val contactList: List<UUID>
 ):Command{
-    override fun execute() {
-        addContactsInGroups(gId,contactList)
-    }
+    override fun execute(): Either<Exception, List<UUID>> = addContactsInGroups(gId,contactList)
 }
 
 class RemoveGroupCommand(private val groupId: GroupId): Command{
-    override fun execute(): Any {
-        return removeGroup(groupId)
-    }
-
+    override fun execute(): Either<Exception, String> = removeGroup(groupId)
 }
 
 class ListAllGroupCommand(

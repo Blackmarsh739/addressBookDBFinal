@@ -43,16 +43,21 @@ object GroupDB {
         }
     }
 
-    fun addContactsInGroups(gId: UUID, contactList: List<UUID>) {
+    fun addContactsInGroups(gId: UUID, contactList: List<UUID>): Either<Exception, List<UUID>> {
 
-        val res = transaction {
-            contactList.forEach { cid ->
-                GroupContactAssociationTable.insert {
-                    it[this.groupId] = gId
-                    it[this.personId] = cid
-                }
-            }
-        }
+      return try {
+           val res = transaction {
+               contactList.forEach { cid ->
+                   GroupContactAssociationTable.insert {
+                       it[this.groupId] = gId
+                       it[this.personId] = cid
+                   }
+               }
+           }
+          Either.Right(contactList)
+       } catch (e: Exception) {
+           Either.Left(Exception("There was some error."))
+       }
     }
 
     fun removeGroup(groupId: GroupId): Either<Exception, String> {

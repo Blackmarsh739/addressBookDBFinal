@@ -7,6 +7,8 @@ import PersonDB
 import SerchContactCommand
 import com.addressbook.tables.*
 import com.example.addressbook.requests.*
+import dbSetup.connectToDatabase
+import dbSetup.resetDatabase
 import entryPoints.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -15,17 +17,9 @@ import storage.GroupDB
 import storage.PhoneNumberDB
 
 fun main(args: Array<String>) {
-    val url = "jdbc:mysql://localhost:3306/addressBookDatabase"
-    val driver = "com.mysql.cj.jdbc.Driver"
-    val username = "parthraval73"
-    val password = "password"
 
-    Database.connect(url, driver, username, password)
-
-    transaction {
-        SchemaUtils.drop(PersonsTable, PhoneNumbersTable, EmailsTable, AddressesTable, GroupsTable,GroupContactAssociationTable)
-        SchemaUtils.create(PersonsTable, PhoneNumbersTable, EmailsTable, AddressesTable, GroupsTable,GroupContactAssociationTable)
-    }
+    connectToDatabase()
+    resetDatabase()
 
     //creat persons
     val person1 = AddPersonRequest("Parth","Raval")
@@ -41,10 +35,10 @@ fun main(args: Array<String>) {
     val shivam = addPersonEntryPoint(person4).orNull()!!
 
     //creat groups
-    val g1 = (AddGroupCommand(AddGroupRequest("Vayana")).execute())
-    val g2 = (AddGroupCommand(AddGroupRequest("PDEU")).execute())
-    val g3 = (AddGroupCommand(AddGroupRequest("Hostel")).execute())
-    val g4 = (AddGroupCommand(AddGroupRequest("Random")).execute())
+    val g1 = addGroupEntryPoint(AddGroupRequest("Vayana")).orNull()!!
+    val g2 = addGroupEntryPoint(AddGroupRequest("PDEU")).orNull()!!
+    val g3 = addGroupEntryPoint(AddGroupRequest("Hostel")).orNull()!!
+    val g4 = addGroupEntryPoint(AddGroupRequest("Random")).orNull()!!
 
 
     //Add Address
@@ -54,10 +48,10 @@ fun main(args: Array<String>) {
     addAddressEntryPoint(AddAddressRequest(shivam.personId,AddressType.Office,"Baroda")).orNull()!!
 
     //Add Phone Number
-    val p1 = AddPhoneNumberCommand(PhoneNumberRequest(bhagvat.personId, PhoneNumberType.Home,"123")).execute().orNull()!!
-    val p2 = AddPhoneNumberCommand( PhoneNumberRequest(parth.personId, PhoneNumberType.Office,"456")).execute().orNull()!!
-    val p3 = AddPhoneNumberCommand(PhoneNumberRequest(hamza.personId, PhoneNumberType.Home,"789")).execute().orNull()!!
-    val p4 = AddPhoneNumberCommand( PhoneNumberRequest(shivam.personId, PhoneNumberType.Office,"100")).execute().orNull()!!
+    val p1 = addPhoneNumberEntryPoint(PhoneNumberRequest(bhagvat.personId, PhoneNumberType.Home,"123")).orNull()!!
+    val p2 = addPhoneNumberEntryPoint( PhoneNumberRequest(parth.personId, PhoneNumberType.Office,"456")).orNull()!!
+    val p3 = addPhoneNumberEntryPoint(PhoneNumberRequest(hamza.personId, PhoneNumberType.Home,"789")).orNull()!!
+    val p4 = addPhoneNumberEntryPoint( PhoneNumberRequest(shivam.personId, PhoneNumberType.Office,"100")).orNull()!!
 
     //Add Email
     addEmailEntryPoint(EmailRequest(parth.personId, EmailType.Office, "parth.raval@vyana.com")).orNull()!!
@@ -69,22 +63,22 @@ fun main(args: Array<String>) {
     updatePersonEntryPoint(UpdatePersonRequest(parth.personId,"Black","Marsh"))
 
     //Update phone number
-    UpdatePhoneNumberCommand(UpdatePhoneNumberRequest(p1.personId, "007", parth.personId, p1.phoneNumberType)).execute()
+    updatePhoneNumberEntryPoint(UpdatePhoneNumberRequest(p1.personId, "007", parth.personId, p1.phoneNumberType))
 
     //add contact inside groups
-    AddContactInGroupCommand(g1.groupId, listOf(parth.personId, hamza.personId, shivam.personId)).execute()
-    AddContactInGroupCommand(g2.groupId, listOf(parth.personId, hamza.personId, bhagvat.personId)).execute()
-    AddContactInGroupCommand(g3.groupId, listOf(parth.personId, bhagvat.personId)).execute()
-    AddContactInGroupCommand(g4.groupId, listOf(hamza.personId)).execute()
+    addContactInGroupEntryPoint(g1.groupId, listOf(parth.personId, hamza.personId, shivam.personId)).orNull()!!
+    addContactInGroupEntryPoint(g2.groupId, listOf(parth.personId, hamza.personId, bhagvat.personId)).orNull()!!
+    addContactInGroupEntryPoint(g3.groupId, listOf(parth.personId, bhagvat.personId)).orNull()!!
+    addContactInGroupEntryPoint(g4.groupId, listOf(hamza.personId)).orNull()!!
 
     //update groups
-    UpdateGroupCommand(GroupDB, UpdateGroupRequest(g1.groupId, "Vayana Network")).execute()
+    updateGroupEntryPoint(UpdateGroupRequest(g1.groupId, "Vayana Network")).orNull()!!
 
     //remove person
     removePersonEntryPoint(shivam.personId)
 
     //delete groups
-    RemoveGroupCommand(GroupDB, g4.groupId ).execute()
+    removeGroupEntryPoint(g4.groupId ).orNull()!!
 
     //List of persons
     val ListOfPersons = (ListAllPersonCommand(PersonDB).execute())
@@ -99,10 +93,10 @@ fun main(args: Array<String>) {
     println("\n")
 
     //List of group names
-    val ListOfGroups = (ListAllGroupCommand(GroupDB).execute())
-    ListOfGroups.forEach {
-        println(it)
-    }
+    val ListOfGroups = (ListAllGroupCommand().execute())
+    println(ListOfGroups)
+
+
 
     println("\n")
     println(SerchContactCommand(PersonDB, "Hamza").execute())
