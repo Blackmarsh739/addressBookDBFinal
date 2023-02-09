@@ -3,10 +3,10 @@ package Commands
 import arrow.core.Either
 import com.addressbook.commands.Command
 import com.example.addressbook.PhoneNumber
-import com.example.addressbook.PhoneNumberId
-import com.example.addressbook.requests.PhoneNumberRequest
+import com.example.addressbook.requests.AddPhoneNumberRequest
 import com.example.addressbook.requests.UpdatePhoneNumberRequest
 import storage.PhoneNumberDB
+import storage.PhoneNumberDB.listAllPhoneNumber
 
 fun UpdatePhoneNumberRequest.toPhoneNumber() =
     PhoneNumber(
@@ -16,7 +16,7 @@ fun UpdatePhoneNumberRequest.toPhoneNumber() =
         phoneNumberType = this@toPhoneNumber.phoneNumberType
     )
 class AddPhoneNumberCommand(
-    private val request: PhoneNumberRequest
+    private val request: AddPhoneNumberRequest
 ): Command {
     override fun execute(): Either<Exception, PhoneNumber> = PhoneNumberDB.addPhoneNumber(request)
 
@@ -31,10 +31,9 @@ class UpdatePhoneNumberCommand(
 }
 
 class ListAllPhoneNumberCommand(
-    private val storage: PhoneNumberDB,
 ): Command{
     override fun execute(): Either<Exception ,List<PhoneNumber>>{
-        return storage.listAllPhoneNumber()
+        return listAllPhoneNumber()
     }
 
 }

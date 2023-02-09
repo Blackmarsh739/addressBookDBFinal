@@ -30,16 +30,15 @@ object PersonDB {
         }
     }
 
-    fun updatePerson(person: Person): Either<Exception, Person> {
-        return try {
-           val res = transaction {
+    fun updatePerson(person: Person): Either<Exception, String> {
+       return try {
+           transaction {
                 PersonsTable.update({ PersonsTable.personId eq person.personId }) {
                     it[this.firstName] = person.firstName
                     it[this.lastName] = person.lastName
                 }
-               fetchPerson(person.personId)
             }
-            Either.Right(res)
+            Either.Right("Updated Sucessfully")
         }
         catch (e: Exception){
             Either.Left(Exception("There was some error."))
@@ -64,17 +63,22 @@ object PersonDB {
        }
 
     }
-    private fun fetchPerson(pid: UUID): Person {
-        val res = transaction {
-            PersonsTable.select(PersonsTable.personId eq pid).map {
-                Person(
-                    it[PersonsTable.personId],
-                    it[PersonsTable.firstName],
-                    it[PersonsTable.lastName],
-                )
-            }
-        }.first()
-        return res
+     fun fetchPerson(pid: UUID): Either<Exception, Person> {
+      return try {
+           val res = transaction {
+               PersonsTable.select(PersonsTable.personId eq pid).map {
+                   Person(
+                       it[PersonsTable.personId],
+                       it[PersonsTable.firstName],
+                       it[PersonsTable.lastName],
+                   )
+               }
+           }.first()
+           Either.Right(res)
+       }
+      catch (e: Exception){
+          Either.Left(Exception("There was some error."))
+      }
     }
 
     fun searchPhoneNumberByPersonName(firstname: String): Either<Exception ,List<PhoneNumber>>{

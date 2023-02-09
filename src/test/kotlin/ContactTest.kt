@@ -1,10 +1,6 @@
 import Commands.*
-import com.addressbook.storages.AddressDB
 import com.example.addressbook.requests.*
 import org.junit.jupiter.api.Test
-import storage.EmailDB
-import storage.GroupDB
-import storage.PhoneNumberDB
 
 class ContactTest: AppTest() {
     val dv = connectToDatabase()
@@ -43,7 +39,7 @@ class ContactTest: AppTest() {
     fun `test add phone number`(){
         val person1 = AddPersonRequest("Parth","Raval")
         val parth = AddPersonCommand(person1).execute().orNull()!!
-        val p1 = AddPhoneNumberCommand(PhoneNumberRequest(parth.personId, PhoneNumberType.Home,"123")).execute()
+        val p1 = AddPhoneNumberCommand(AddPhoneNumberRequest(parth.personId, PhoneNumberType.Home,"123")).execute()
 
     }
 
@@ -51,7 +47,7 @@ class ContactTest: AppTest() {
     fun `test update phone number`(){
         val person1 = AddPersonRequest("Parth","Raval")
         val parth = AddPersonCommand(person1).execute().orNull()!!
-        val p1 = AddPhoneNumberCommand(PhoneNumberRequest(parth.personId, PhoneNumberType.Home,"123")).execute().orNull()!!
+        val p1 = AddPhoneNumberCommand(AddPhoneNumberRequest(parth.personId, PhoneNumberType.Home,"123")).execute().orNull()!!
         UpdatePhoneNumberCommand(UpdatePhoneNumberRequest((p1.phoneNumberId), "007", parth.personId, p1.phoneNumberType)).execute()
 
     }

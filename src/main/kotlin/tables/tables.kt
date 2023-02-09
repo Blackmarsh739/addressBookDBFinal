@@ -20,7 +20,7 @@ object PhoneNumbersTable : Table("phonenumbers") {
     val phoneNumberType =   enumerationByName<PhoneNumberType>("type",10)
     val phone = varchar("phone_number", length = 100)
 
-    override val primaryKey = PrimaryKey(PhoneNumbersTable.phoneNumberId, name = "PK_PhoneNumber_ID")
+    override val primaryKey = PrimaryKey(phoneNumberId, name = "PK_PhoneNumber_ID")
 }
 
 object EmailsTable : Table("emails") {
@@ -29,7 +29,7 @@ object EmailsTable : Table("emails") {
     val emailType =   enumerationByName<EmailType>("type",10)
     val email = varchar("email", length = 100)
 
-    override val primaryKey = PrimaryKey(EmailsTable.emailId, name = "PK_Email_ID")
+    override val primaryKey = PrimaryKey(emailId, name = "PK_Email_ID")
 }
 
 object AddressesTable : Table("addresses") {
@@ -39,12 +39,11 @@ object AddressesTable : Table("addresses") {
     val addressDetail = varchar("address_detail", length = 100)
 
 
-    override val primaryKey = PrimaryKey(AddressesTable.addressId, name = "PK_Address_ID")
+    override val primaryKey = PrimaryKey(addressId, name = "PK_Address_ID")
 //    override val foreignKey = ForeignKey(Addresses.personId, name = "FK_Person_ID")
 }
 object GroupsTable : Table("groupsTable") {
     val groupId = uuid("group_id").autoGenerate()
-//    val personId = (uuid("person_id") references Persons.personId).index()
     val groupName = varchar("group_name", length = 100)
 
     override val primaryKey = PrimaryKey(groupId, name = "PK_Groups_ID")

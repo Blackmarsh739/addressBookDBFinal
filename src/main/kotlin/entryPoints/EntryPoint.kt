@@ -3,6 +3,8 @@ package entryPoints
 import AddAddressCommand
 import AddPersonCommand
 import Commands.*
+import FetchPersonCommand
+import ListAllPersonCommand
 import RemovePersonCommand
 import UpdatePersonCommand
 import arrow.core.Either
@@ -14,6 +16,9 @@ import handler.Handlers.addEmailHandler
 import handler.Handlers.addGroupHandler
 import handler.Handlers.addPersonHandler
 import handler.Handlers.addPhoneNumberHandler
+import handler.Handlers.fetchPersonHandler
+import handler.Handlers.listAllPersonHandler
+import handler.Handlers.listAllPhoneNumberHandler
 import handler.Handlers.removeGroupHandler
 import handler.Handlers.removePersonHandler
 import handler.Handlers.updateGroupHandler
@@ -26,7 +31,7 @@ fun addPersonEntryPoint(person: AddPersonRequest): Either<Exception, Person>{
     val cmd = AddPersonCommand(person)
     return addPersonHandler(cmd)
 }
-fun updatePersonEntryPoint(person: UpdatePersonRequest): Either<Exception, Person>{
+fun updatePersonEntryPoint(person: UpdatePersonRequest): Either<Exception, String>{
     val cmd = UpdatePersonCommand(person)
     return updatePersonHandler(cmd)
 }
@@ -48,7 +53,7 @@ fun addEmailEntryPoint(email: EmailRequest): Either<Exception, Email>{
 }
 
 //phoneNumber
-fun addPhoneNumberEntryPoint(phoneNumber: PhoneNumberRequest): Either<Exception, PhoneNumber>{
+fun addPhoneNumberEntryPoint(phoneNumber: AddPhoneNumberRequest): Either<Exception, PhoneNumber>{
     val cmd = AddPhoneNumberCommand(phoneNumber)
     return addPhoneNumberHandler(cmd)
 }
@@ -56,6 +61,11 @@ fun addPhoneNumberEntryPoint(phoneNumber: PhoneNumberRequest): Either<Exception,
 fun updatePhoneNumberEntryPoint(phoneNumber: UpdatePhoneNumberRequest): Either<Exception, PhoneNumber>{
     val cmd = UpdatePhoneNumberCommand(phoneNumber)
     return updatePhoneNumberHandler(cmd)
+}
+
+fun listAllPhoneNumberEntryPoint(): Either<Exception, List<PhoneNumber>>{
+    val cmd = ListAllPhoneNumberCommand()
+    return listAllPhoneNumberHandler(cmd)
 }
 
 fun addGroupEntryPoint(group: AddGroupRequest): Either<Exception, Group>{
@@ -76,4 +86,14 @@ fun removeGroupEntryPoint(group: GroupId): Either<Exception, String>{
 fun addContactInGroupEntryPoint(group: GroupId , contactList: List<UUID>): Either<Exception, List<UUID>>{
     val cmd = AddContactInGroupCommand(group, contactList)
     return addContactInGroupHandler(cmd)
+}
+
+fun listAllPersonsEntryPoint():Either<Exception, List<Person>>{
+    val cmd = ListAllPersonCommand()
+    return listAllPersonHandler(cmd)
+}
+
+fun fetchPersonEntryPoint(pId: UUID): Either<Exception, Person> {
+    val cmd = FetchPersonCommand(pId)
+    return fetchPersonHandler(cmd)
 }

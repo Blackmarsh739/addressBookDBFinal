@@ -3,21 +3,18 @@ package handler
 import AddAddressCommand
 import AddPersonCommand
 import Commands.*
-import PersonDB
+import FetchPersonCommand
+import ListAllPersonCommand
 import RemovePersonCommand
 import UpdatePersonCommand
 import arrow.core.Either
-import arrow.core.continuations.either
 import com.example.addressbook.*
-import com.example.addressbook.requests.EmailRequest
-import com.example.addressbook.requests.PhoneNumberRequest
-import java.sql.DataTruncation
 import java.util.UUID
 
 object Handlers {
     fun addPersonHandler(cmd: AddPersonCommand): Either<Exception, Person> = cmd.execute()
 
-    fun updatePersonHandler(cmd: UpdatePersonCommand): Either<Exception, Person> = cmd.execute()
+    fun updatePersonHandler(cmd: UpdatePersonCommand): Either<Exception, String> = cmd.execute()
 
     fun removePersonHandler(cmd: RemovePersonCommand): Either<Exception, String> = cmd.execute()
 
@@ -27,6 +24,7 @@ object Handlers {
 
     fun addPhoneNumberHandler(cmd: AddPhoneNumberCommand): Either<Exception, PhoneNumber> = cmd.execute()
     fun updatePhoneNumberHandler(cmd: UpdatePhoneNumberCommand): Either<Exception, PhoneNumber> = cmd.execute()
+    fun listAllPhoneNumberHandler(cmd: ListAllPhoneNumberCommand): Either<Exception, List<PhoneNumber>> = cmd.execute()
 
     fun addGroupHandler(cmd: AddGroupCommand): Either<Exception, Group> = cmd.execute()
 
@@ -34,4 +32,6 @@ object Handlers {
 
     fun removeGroupHandler(cmd: RemoveGroupCommand): Either<Exception, String> = cmd.execute()
     fun addContactInGroupHandler(cmd: AddContactInGroupCommand): Either<Exception, List<UUID>> = cmd.execute()
+    fun listAllPersonHandler(cmd: ListAllPersonCommand): Either<Exception, List<Person>> = cmd.execute()
+    fun fetchPersonHandler(cmd: FetchPersonCommand): Either<Exception, Person> = cmd.execute()
 }

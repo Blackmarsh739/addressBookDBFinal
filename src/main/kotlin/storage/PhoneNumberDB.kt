@@ -3,7 +3,7 @@ package storage
 import arrow.core.Either
 import com.addressbook.tables.PhoneNumbersTable
 import com.example.addressbook.PhoneNumber
-import com.example.addressbook.requests.PhoneNumberRequest
+import com.example.addressbook.requests.AddPhoneNumberRequest
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -17,7 +17,7 @@ fun ResultRow.toPhone() = PhoneNumber(
     phoneNumberType = this@toPhone[PhoneNumbersTable.phoneNumberType]
 )
 object PhoneNumberDB {
-    fun addPhoneNumber(phoneNumber: PhoneNumberRequest): Either<Exception, PhoneNumber> {
+    fun addPhoneNumber(phoneNumber: AddPhoneNumberRequest): Either<Exception, PhoneNumber> {
         return try {
             val res = transaction {
                 PhoneNumbersTable.insert {
