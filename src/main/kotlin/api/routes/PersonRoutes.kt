@@ -36,5 +36,11 @@ fun Route.personRouting(){
             val deletedPerson = removePersonEntryPoint(personId)
             call.respond(deletedPerson)
         }
+        put ("{id}"){
+            val personId = UUID.fromString(call.parameters["id"])
+            val personRequest = call.receive<AddPersonRequest>()
+            val updatedPerson = addPersonEntryPoint(personRequest)
+            call.respond(updatedPerson)
+        }
     }
 }

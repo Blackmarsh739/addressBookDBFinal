@@ -16,7 +16,9 @@ import handler.Handlers.addEmailHandler
 import handler.Handlers.addGroupHandler
 import handler.Handlers.addPersonHandler
 import handler.Handlers.addPhoneNumberHandler
+import handler.Handlers.fetchGroupHandler
 import handler.Handlers.fetchPersonHandler
+import handler.Handlers.listAllGroupHandler
 import handler.Handlers.listAllPersonHandler
 import handler.Handlers.listAllPhoneNumberHandler
 import handler.Handlers.removeGroupHandler
@@ -96,4 +98,13 @@ fun listAllPersonsEntryPoint():Either<Exception, List<Person>>{
 fun fetchPersonEntryPoint(pId: UUID): Either<Exception, Person> {
     val cmd = FetchPersonCommand(pId)
     return fetchPersonHandler(cmd)
+}
+fun listAllGroupEntryPoint(): Either<Exception, List<Group>> {
+    val cmd = ListAllGroupCommand()
+    return listAllGroupHandler(cmd)
+}
+
+fun fetchGroupEntryPoint(gId: UUID): Either<Exception, Group> {
+    val cmd = FetchGroupCommand(gId)
+    return fetchGroupHandler(cmd)
 }

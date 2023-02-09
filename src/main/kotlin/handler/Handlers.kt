@@ -34,4 +34,6 @@ object Handlers {
     fun addContactInGroupHandler(cmd: AddContactInGroupCommand): Either<Exception, List<UUID>> = cmd.execute()
     fun listAllPersonHandler(cmd: ListAllPersonCommand): Either<Exception, List<Person>> = cmd.execute()
     fun fetchPersonHandler(cmd: FetchPersonCommand): Either<Exception, Person> = cmd.execute()
+    fun listAllGroupHandler(cmd: ListAllGroupCommand): Either<Exception, List<Group>> = cmd.execute()
+    fun fetchGroupHandler(cmd: FetchGroupCommand): Either<Exception, Group> = cmd.execute()
 }

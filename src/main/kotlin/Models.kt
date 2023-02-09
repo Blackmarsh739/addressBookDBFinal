@@ -1,8 +1,4 @@
 package com.example.addressbook
-
-import com.example.addressbook.requests.AddressType
-import com.example.addressbook.requests.EmailType
-import com.example.addressbook.requests.PhoneNumberType
 import java.util.UUID
 
 typealias PersonId = UUID
@@ -19,7 +15,7 @@ typealias AddressId = UUID
 data class Address(
     val addressId: AddressId,
     val personId: PersonId,
-    val addressType: AddressType,
+    val addressType: String,
     val addressLine: String,
 )
 
@@ -28,7 +24,7 @@ typealias PhoneNumberId = UUID
 data class PhoneNumber(
     val phoneNumberId: PhoneNumberId,
     val personId: PersonId,
-    val phoneNumberType: PhoneNumberType,
+    val phoneNumberType: String,
     val phoneNumber: String,
 )
 
@@ -36,7 +32,7 @@ typealias EmailId = UUID
 data class Email(
     val emailId: EmailId,
     val personId: PersonId,
-    val emailType: EmailType,
+    val emailType: String,
     val emailDetail: String
 )
 

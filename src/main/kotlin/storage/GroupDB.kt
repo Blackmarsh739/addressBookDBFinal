@@ -86,4 +86,20 @@ object GroupDB {
             Either.Left(Exception("There was some error."))
         }
     }
+
+    fun fetchGroup(gId: UUID): Either<Exception, Group> {
+        return try {
+            val res = transaction {
+                GroupsTable.select { GroupsTable.groupId eq gId }.map {
+                    Group(
+                        it[GroupsTable.groupId],
+                        it[GroupsTable.groupName],
+                    )
+                }
+            }.first()
+            Either.Right(res)
+        } catch (e: Exception) {
+            Either.Left(Exception("There was some error."))
+        }
+    }
 }

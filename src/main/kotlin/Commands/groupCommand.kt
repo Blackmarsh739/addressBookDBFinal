@@ -10,6 +10,7 @@ import com.example.addressbook.requests.UpdateGroupRequest
 import storage.GroupDB
 import storage.GroupDB.addContactsInGroups
 import storage.GroupDB.addGroup
+import storage.GroupDB.fetchGroup
 import storage.GroupDB.listAllGroups
 import storage.GroupDB.removeGroup
 import storage.GroupDB.updateGroup
@@ -57,4 +58,10 @@ class ListAllGroupCommand(
         return listAllGroups()
     }
 
+}
+
+class FetchGroupCommand(private val gId: UUID): Command{
+    override fun execute(): Either<Exception, Group> {
+        return fetchGroup(gId)
+    }
 }
